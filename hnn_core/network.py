@@ -1191,7 +1191,39 @@ class Network:
                                     t_0=t0, t_stop=tstop)
 
     def _add_cell_type(self, cell_name, pos, cell_template=None):
-        """Add cell type by updating pos_dict and gid_ranges."""
+        """Add cell type by updating pos_dict and gid_ranges.
+        Registers a new cell type in the network by assigning global IDs (GIDs)
+        and storing position information. Used for both biological cells
+        (when cell_template is provided) and artificial drive cells
+        (when cell_template is None).
+        
+        This is a critical function for network construction, as the GID ranges
+        established here determine how cells are addressed during simulation
+        and connectivity setup.
+        
+        Parameters
+        ----------
+        cell_name : str
+            Name of the cell type to add to the network. Used as a key
+            in gid_ranges and pos_dict dictionaries.
+        pos : list of tuple
+            List of (x, y, z) positions for each cell of this type.
+            The length of this list determines how many cells of this
+            type will be created.
+        cell_template : Cell instance or None
+            Template cell for this cell type. If None, only position and GID range
+            information is stored (e.g., for artificial cells). When provided,
+            this template is used to create all cells of this type.
+        
+        Notes
+        -----
+        This function updates several internal attributes:
+        - self._n_gids: Incremented by the number of new cells
+        - self.gid_ranges: Updated with GID range for the new cell type
+        - self.pos_dict: Updated with positions for the new cells
+        - self.cell_types: Updated with the cell template (if provided)
+        - self._n_cells: Incremented when adding biological cells
+        """
         ll = self._n_gids
         self._n_gids += len(pos)
         self.gid_ranges[cell_name] = range(ll, self._n_gids)
